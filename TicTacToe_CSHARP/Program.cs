@@ -34,7 +34,8 @@ namespace TicTacToe {
 
             int result = 0;
             int player = 0;
-            int whoseTurn = 1;
+            //int whoseTurn = 1;
+            bool whoseTurn = false;
             bool keepPlaying = true;
 
             //CREATE BOARD
@@ -54,9 +55,8 @@ namespace TicTacToe {
                 DrawBoard(board);
 
                 //IF TURN IS EVEN = P2
-                if (whoseTurn % 2 == 0) {
+                if (whoseTurn == true) {
                     player = 2;
-                //ELSE, P1
                 } else {
                     player = 1;
                 }
@@ -64,8 +64,8 @@ namespace TicTacToe {
                 //PLAY TURN PER 'PLAYER'
                 int winLoseDraw = Turn(board, player);
 
-                //INCREMENT WHOSETURN TO SWITCH PLAYERS
-                whoseTurn++;
+                //SWITCH PLAYERS
+                whoseTurn = !whoseTurn;
 
                 Console.Clear();
 
@@ -77,13 +77,13 @@ namespace TicTacToe {
                     result = player;
                     keepPlaying = false;
 
-                //IF DRAW
+                    //IF DRAW
                 } else if (winLoseDraw == 0) {
                     Console.WriteLine($"It's a DRAW!!");
                     result = 0;
                     keepPlaying = false;
 
-                //IF NEITHER(CONTINUE)
+                    //IF NEITHER(CONTINUE)
                 } else {
                     keepPlaying = true;
                 }
@@ -105,14 +105,14 @@ namespace TicTacToe {
             } else {
                 icon = "O";
             }
-            
+
             //INPUT VAL
             do {
 
                 //GET PLAYER CHOICE(x,y coordinates)
                 (x, y) = GetPlayerChoices(player);
 
-               canPlace = PlaceMarker(board, "*", x, y);
+                canPlace = PlaceMarker(board, "*", x, y);
 
                 //IF CANPLACE IS TRUE
                 if (canPlace) {
@@ -125,7 +125,7 @@ namespace TicTacToe {
                 }
 
             } while (canPlace == false);
-            
+
 
             // SETTING THE CHAR ON THE INDEX
             board[x, y] = icon;
@@ -136,61 +136,30 @@ namespace TicTacToe {
             return winLoseDraw;
         }
 
- 
-        static (int,int) GetPlayerChoices(int player) {
+
+        static (int, int) GetPlayerChoices(int player) {
 
             string playerChoices = "";
-            string[] coords;
+            string[] coOrds;
+            bool xsuccess, ysuccess;
+            int x, y;
 
-            do {
+            do
+            {
                 Console.WriteLine();
                 playerChoices = Input($"Player {player}, please enter x and y coordinates like so, \"1 2\", seperated by a single space: ");
 
-                coords = playerChoices.Split(' ');
+            }
+            while (playerChoices.Length != 3 || playerChoices[1] != 32 || (playerChoices[0] < 48 || playerChoices[0] > 50) || (playerChoices[2] < 48 || playerChoices[2] > 50)) ;
 
-               } while (playerChoices.Length != 3
-               || char.IsNumber(playerChoices[0]) == false
-               || playerChoices[1] != ' '
-               || char.IsNumber(playerChoices[2]) == false
-               || playerChoices[0] > 50 || playerChoices[0] < 48
-               || playerChoices[2] > 50 || playerChoices[2] < 48
-               || string.IsNullOrEmpty(playerChoices)
-               || string.IsNullOrWhiteSpace(playerChoices)
-            ); 
-
-            string removed = StringRemove(playerChoices, ' ');
-
-            char[] choices = removed.ToCharArray();
-
-            int x = (int)Char.GetNumericValue(choices[0]);
-            int y = (int)Char.GetNumericValue(choices[1]);
+            coOrds = playerChoices.Split((char)32);
+                
+            x = int.Parse(coOrds[0]);
+            y = int.Parse(coOrds[1]);
 
             return (x,y);
 
         }//END GETPLAYERCHOICES
-
-        static string StringRemove(string text, char letter) {
-            int count = 0;
-
-            //Count number of occurences of char 'letter' in string "text"
-            for (int i = 0; i < text.Length; i++) {
-                if (text[i] == letter) {
-                    count++;
-                }
-            }
-
-            //declare new string to hold only chars not equal to 'letter'
-            string removedString = "";
-            //check each char in "text"; If char not equal to letter, add to string "removedString"
-            for (int j = 0; j < text.Length; j++) {
-                if (text[j] != letter) {
-                    removedString += text[j];
-                }
-            }
-            return removedString;
-
-        }//END STRINGREMOVE
-
  
         static void DrawBoard(string[,] board) {
 
@@ -201,9 +170,6 @@ namespace TicTacToe {
             Console.WriteLine("               TIC TAC TOE               ");
             Console.WriteLine("──────────────────────────────────────────");
             Console.WriteLine($"Player 1 - X\t\t      Player 2 - O\n");
-            //Console.WriteLine($"Player1: {p1wins}\tDraw:{draws}\t\tPlayer2:{p2wins}");
-
-            //Console.WriteLine("\n");
 
             Console.WriteLine(line1);
             Console.WriteLine();
